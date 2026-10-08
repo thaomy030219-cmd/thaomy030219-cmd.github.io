@@ -1,0 +1,51 @@
+name: Cap nhat kho ung dung
+
+on:
+  push:
+    branches: [main]
+  release:
+    types: [published, edited, deleted, unpublished]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: catalog-pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+      - name: Kiem tra bo xu ly danh sach
+        run: node --test scripts/build-catalog.test.mjs
+      - name: Tao danh sach tu Releases
+        run: node scripts/build-catalog.mjs
+        env:
+          GH_TOKEN: ${{ github.token }}
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: _site
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Xuat ban website
+        id: deployment
+        uses: actions/deploy-pages@v4
