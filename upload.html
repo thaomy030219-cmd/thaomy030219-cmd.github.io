@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Chuẩn bị tải ứng dụng lên — Đỗ Xuân Quyết</title>
+<style>
+:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;background:#080c14;color:#eef2f9;font:15px/1.65 system-ui,sans-serif}main{max-width:880px;margin:auto;padding:28px 20px 60px}a{color:#22d3ee}h1{line-height:1.2}h2{font-size:20px}.panel{background:#101a2d;border:1px solid #263650;border-radius:14px;padding:22px;margin:18px 0}.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}label{display:block;font-weight:600;margin:12px 0 5px}input,select,textarea{width:100%;padding:11px;border:1px solid #37506c;border-radius:8px;background:#0b1220;color:#fff;font:inherit}textarea{resize:vertical}button,.button{display:inline-block;background:#22d3ee;color:#08121a;padding:11px 16px;border:0;border-radius:8px;font:600 15px system-ui;cursor:pointer;text-decoration:none;margin:8px 8px 8px 0}button.secondary{background:#263650;color:#fff}.hint{color:#a8b8ce;font-size:14px}.error{color:#ffb3aa}pre{background:#080c14;white-space:pre-wrap;overflow-wrap:anywhere;padding:14px;border-radius:8px}ol{padding-left:22px}li{margin-bottom:9px}[hidden]{display:none!important}#notice{min-height:24px}input:focus,select:focus,textarea:focus,button:focus{outline:2px solid #22d3ee;outline-offset:2px}@media(max-width:600px){.grid{grid-template-columns:1fr}.panel{padding:16px}}details{margin-top:14px}code{color:#b4eff6}
+</style>
+</head>
+<body><main>
+<a href="./">← Về kho ứng dụng</a>
+<h1>Chuẩn bị tải ứng dụng / tệp lên</h1>
+<p>Một nơi tải lên chung cho toàn bộ ứng dụng: <a href="https://github.com/thaomy030219-cmd/thaomy030219-cmd.github.io/releases" target="_blank" rel="noopener">GitHub Releases của kho ứng dụng</a>.</p>
+<p class="hint">Trang này giúp điền sẵn thông tin, không tải tệp lên và không yêu cầu mật khẩu hay token. Bạn sẽ chọn tệp và xác nhận xuất bản trên GitHub bằng tài khoản của mình. Chỉ đưa lên tệp bạn có quyền phân phối công khai.</p>
+<section class="panel">
+<h2>1. Chọn ứng dụng và phiên bản</h2>
+<form id="prepare">
+<label for="existing">Ứng dụng / tệp</label><select id="existing"><option value="">Thêm ứng dụng / tệp mới</option></select>
+<p class="hint" id="catalogInfo" role="status">Đang đọc danh sách hiện tại…</p>
+<div class="grid">
+<div><label for="name">Tên hiển thị</label><input id="name" required maxlength="200" placeholder="Ví dụ: Tra Thép Hình"></div>
+<div><label for="version">Phiên bản mới</label><input id="version" required pattern="[0-9]+(\.[0-9]+){1,3}" placeholder="Ví dụ: 1.0.9"></div>
+<div><label for="id">Mã cố định của mục này</label><input id="id" required pattern="[A-Za-z0-9][A-Za-z0-9_-]{2,79}" placeholder="Ví dụ: tra-thep-hinh-windows"><p class="hint">Giữ cùng mã cho các lần cập nhật. Android và Windows phải có mã riêng.</p></div>
+<div><label for="category">Danh mục</label><select id="category"><option value="co-khi">Cơ khí</option><option value="cong-cu">Công cụ</option><option value="sach">Sách &amp; Tài liệu</option><option value="game">Trò chơi</option><option value="thu-vien">Thư viện sách điện tử</option></select></div>
+</div>
+<label for="description">Mô tả ngắn</label><textarea id="description" rows="3" required maxlength="2000" placeholder="Ứng dụng hoặc tệp dùng để làm gì?"></textarea>
+<label for="file">Chọn tệp để lấy tên và nhận diện loại</label><input id="file" type="file" required accept=".apk,.exe,.msi,.epub,.pdf,.docx,.xlsx,.aab,.zip,.7z,.rar">
+<p class="hint">Tệp chưa được gửi ở bước này. Lát nữa chọn lại đúng tệp này trên GitHub. Mỗi bản phát hành dùng một tệp.</p>
+<label for="platform">Nền tảng / loại tệp</label><select id="platform"><option value="WINDOWS">Windows</option><option value="ANDROID">Android — APK cài trực tiếp</option><option value="EBOOK">Sách điện tử — EPUB</option><option value="DOCUMENT">Tài liệu — PDF / Word / Excel</option><option value="ANDROID-STORE">Android — AAB dành cho Google Play</option><option value="FILE">Tệp nén khác</option></select>
+<p class="hint" id="fileInfo">APK, EXE, MSI, EPUB, PDF, DOCX, XLSX, AAB được nhận diện tự động. Tệp ZIP / 7Z / RAR cần bạn chọn nền tảng.</p>
+<button type="submit">Tạo thông tin phát hành</button>
+</form>
+<p id="notice" role="status" aria-live="polite"></p>
+</section>
+<section class="panel" id="result" hidden>
+<h2>2. Mở GitHub và tải tệp lên</h2>
+<p><a class="button" href="https://github.com/thaomy030219-cmd/thaomy030219-cmd.github.io/releases/new" target="_blank" rel="noopener">Mở trang tải lên GitHub</a></p>
+<ol>
+<li>Đăng nhập GitHub nếu cần. Ở <b>Choose a tag</b>, dán mã bên dưới và chọn tạo tag mới. Giữ <b>Target: main</b>.</li>
+<li>Dán tiêu đề vào <b>Release title</b>, dán toàn bộ thông tin vào <b>Release notes</b>.</li>
+<li>Bấm <b>Attach binaries…</b> và chọn đúng tệp. Chờ tên tệp xuất hiện, không còn <b>Uploading…</b>.</li>
+<li>Không chọn <b>Pre-release</b>. Bấm <b>Publish release</b>. Chờ tác vụ <b>Cap nhat kho ung dung</b> có dấu tích xanh rồi mở website.</li>
+</ol>
+<label for="tagOutput">Tag (mã bản phát hành)</label><input id="tagOutput" readonly><button type="button" class="secondary" data-copy="tagOutput">Sao chép tag</button>
+<label for="titleOutput">Tiêu đề</label><input id="titleOutput" readonly><button type="button" class="secondary" data-copy="titleOutput">Sao chép tiêu đề</button>
+<label for="bodyOutput">Thông tin dán vào Release notes</label><textarea id="bodyOutput" rows="13" readonly></textarea><button type="button" class="secondary" data-copy="bodyOutput">Sao chép thông tin</button>
+<p class="hint">Không sửa khối <code>app-catalog</code> trên GitHub. Có thể viết ghi chú thêm ở bên dưới. Không đổi tên tệp sau khi tạo thông tin này.</p>
+<a href="https://github.com/thaomy030219-cmd/thaomy030219-cmd.github.io/actions/workflows/catalog-pages.yml" target="_blank" rel="noopener">Xem tiến trình cập nhật website</a>
+</section>
+<section class="panel">
+<h2>Những lần cập nhật sau</h2>
+<p>Quay lại trang này → chọn ứng dụng có sẵn → nhập phiên bản cao hơn → chọn tệp mới → tạo thông tin → tải lên GitHub. Tên, mô tả, danh mục và mã được điền sẵn. Website tự cập nhật link, phiên bản, ngày và định dạng; không phải sửa HTML.</p>
+<details><summary>Nếu website chưa cập nhật thì làm gì?</summary><p>Mở tiến trình cập nhật ở GitHub Actions. Dấu vàng: đang chạy; dấu đỏ: mở phần <b>Tao danh sach tu Releases</b> để xem lỗi (thường do tên tệp không khớp, chưa tải xong hoặc thiếu thông tin). Sửa release, bấm <b>Update release</b>, hoặc bấm <b>Run workflow</b> trong tác vụ để cập nhật lại. Bản nháp và bản Pre-release không xuất hiện trên website. Khi cập nhật lỗi, website đang hoạt động không bị ghi đè.</p></details>
+<details><summary>Tệp AAB và tệp nén</summary><p>AAB chỉ dùng để đưa lên Google Play, không cài trực tiếp như APK. ZIP / 7Z / RAR được ghi đúng định dạng tệp nén; hãy nêu cách giải nén trong mô tả.</p></details>
+</section>
+<script>
+const $ = id => document.getElementById(id);
+let catalog = [];
+const types = { apk:'ANDROID', exe:'WINDOWS', msi:'WINDOWS', epub:'EBOOK', pdf:'DOCUMENT', docx:'DOCUMENT', xlsx:'DOCUMENT', aab:'ANDROID-STORE' };
+function invalidate(){ $('result').hidden = true; $('notice').textContent = ''; }
+function slug(s){return s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[đĐ]/g,'d').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,55);}
+$('existing').addEventListener('change', () => {
+  const app = catalog.find(a => a.id === $('existing').value);
+  for (const key of ['id','name','description','category','platform']) {
+    if (app) $(key).value = app[key];
+    else if (['id','name','description'].includes(key)) $(key).value = '';
+  }
+  $('id').readOnly = !!app; $('version').value = ''; $('file').value = ''; invalidate();
+});
+$('name').addEventListener('input', () => { if (!$('existing').value) $('id').value = slug($('name').value) + '-' + $('platform').value.toLowerCase(); });
+$('file').addEventListener('change', () => {
+  const file = $('file').files[0]; if (!file) return;
+  const type = types[file.name.split('.').pop().toLowerCase()];
+  if (type) $('platform').value = type;
+  $('fileInfo').textContent = file.name + (type ? ' — tự nhận diện: ' + type : ' — tệp nén: hãy chọn nền tảng phù hợp.');
+  if (!$('existing').value) $('id').value = slug($('name').value) + '-' + $('platform').value.toLowerCase();
+});
+$('prepare').addEventListener('input', invalidate);
+$('prepare').addEventListener('change', invalidate);
+$('prepare').addEventListener('submit', event => {
+  event.preventDefault();
+  const app = catalog.find(a => a.id === $('existing').value), file = $('file').files[0];
+  const version = $('version').value.trim(), id = $('id').value.trim(), platform = $('platform').value;
+  const existingId = catalog.find(a => a.id === id);
+  if (!app && existingId) { $('notice').textContent = 'Mã này đã có. Hãy chọn ứng dụng có sẵn ở đầu trang.'; return; }
+  if (app && app.platform !== platform) { $('notice').textContent = 'Tệp khác nền tảng của mục đã chọn. Hãy chọn đúng mục hoặc thêm mục mới.'; return; }
+  if (app) {
+    const a = version.split('.').map(Number), b = app.version.split('.').map(Number);
+    let comparison = 0;
+    for(let i=0;i<Math.max(a.length,b.length);i++){if((a[i]||0)!==(b[i]||0)){comparison=(a[i]||0)>(b[i]||0)?1:-1;break;}}
+    if(comparison<=0){$('notice').textContent='Phiên bản phải cao hơn '+app.version+'.';return;}
+  }
+  const ext = file.name.split('.').pop().toLowerCase();
+  if (!types[ext] && !['zip','7z','rar'].includes(ext)) { $('notice').textContent = 'Định dạng tệp chưa được hỗ trợ.'; return; }
+  if (types[ext] && types[ext] !== platform) { $('notice').textContent = 'Loại tệp không khớp nền tảng đã chọn.'; return; }
+  if (file.size === 0 || file.size >= 2 * 1024 ** 3) { $('notice').textContent = 'Tệp phải có dữ liệu và nhỏ hơn 2 GB.'; return; }
+  const data = { id, name:$('name').value.trim(), category:$('category').value, description:$('description').value.trim(), version, platform, file:file.name };
+  $('tagOutput').value = id.toLowerCase() + '-v' + version;
+  $('titleOutput').value = data.name + ' — ' + platform + ' ' + version;
+  $('bodyOutput').value = '```app-catalog\n' + JSON.stringify(data,null,2) + '\n```';
+  $('result').hidden = false;
+  $('notice').textContent = 'Đã tạo thông tin. Tệp vẫn ở máy của bạn; hãy tải tệp lên trong trang GitHub ở bước 2.';
+});
+document.querySelectorAll('[data-copy]').forEach(button => button.addEventListener('click', async () => {
+  const field = $(button.dataset.copy);
+  try { await navigator.clipboard.writeText(field.value); $('notice').textContent = 'Đã sao chép. Dán vào ô tương ứng trên GitHub.'; }
+  catch { field.focus(); field.select(); $('notice').textContent = 'Nhấn Ctrl+C để sao chép phần đã chọn.'; }
+}));
+async function loadCatalog(){
+  try {
+    const response = await fetch('./catalog.json',{cache:'no-store'}); if(!response.ok) throw new Error('HTTP '+response.status);
+    const data=await response.json(); if(data.schema!==1||!Array.isArray(data.apps)) throw new Error('Danh sách không hợp lệ');
+    catalog=data.apps;
+    for(const app of catalog){const option=document.createElement('option');option.value=app.id;option.textContent=app.name+' — '+app.platform+' (v'+app.version+')';$('existing').append(option);}
+    $('catalogInfo').textContent='Đã đọc '+catalog.length+' mục. Chọn mục cũ để cập nhật, hoặc thêm mục mới.';
+  }catch{$('catalogInfo').textContent='Chưa đọc được danh sách. Tải lại trang trước khi cập nhật ứng dụng cũ.'; $('prepare').querySelector('button[type="submit"]').disabled=true;}
+}
+loadCatalog();
+</script>
+</main></body></html>
