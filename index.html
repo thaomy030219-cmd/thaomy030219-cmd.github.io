@@ -325,7 +325,8 @@
   <div class="section-title">Danh mục ứng dụng</div>
   <div class="cats" id="catBar"></div>
 
-  <div class="search-wrap">
+  <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;margin-top:18px"><p id="catalogStatus" role="status" style="font-size:12px;color:var(--text-dim);margin:0">Đang cập nhật danh sách ứng dụng…</p><a href="./upload.html" style="font-size:13px;color:var(--cyan)">Chuẩn bị tải ứng dụng / tệp lên →</a></div>
+<div class="search-wrap">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
     <input id="searchInput" type="text" placeholder="Tìm kiếm ứng dụng...">
   </div>
@@ -354,19 +355,8 @@
 </footer>
 
 <script>
-/* ============================================================
-   THÊM ỨNG DỤNG MỚI
-   Copy 1 khối {...} bên dưới, dán vào cuối mảng APPS (nhớ thêm
-   dấu phẩy "," trước khối vừa dán), rồi sửa lại thông tin.
-   Không cần biết code — chỉ sửa chữ trong dấu ngoặc kép "...".
-
-   category: "co-khi" | "cong-cu" | "sach" | "game" | "thu-vien"
-   platform: "ANDROID" | "WINDOWS" | "EBOOK"
-   format:   "APK" | "EXE" | "EPUB"
-   icon:     "wrench" | "book" | "gamepad" | "tool" | "box"
-   download: link tải trực tiếp (từ GitHub Releases hoặc file raw)
-   ============================================================ */
-const apps = [
+/* Danh sách dự phòng. Thêm hoặc cập nhật qua upload.html và GitHub Releases. */
+let apps = [
   {
     id: "APP-001",
     name: "Tra Thép Hình",
@@ -585,17 +575,17 @@ function renderApps(){
       <div class="card-top">
         <div class="app-icon">${svgIcon(a.icon)}</div>
         <div style="text-align:right;">
-          <div class="platform-badge">${a.platform} · ${a.format}</div>
-          <div class="id-badge">${a.id}</div>
+          <div class="platform-badge">${escapeCatalogText(a.platform)} · ${escapeCatalogText(a.format)}</div>
+          <div class="id-badge">${escapeCatalogText(a.id)}</div>
         </div>
       </div>
-      <h3>${a.name}</h3>
-      <p class="desc">${a.description}</p>
+      <h3>${escapeCatalogText(a.name)}</h3>
+      <p class="desc">${escapeCatalogText(a.description)}</p>
       <div class="card-meta">
-        <span>v${a.version}</span>
-        <span>${a.date}</span>
+        <span>v${escapeCatalogText(a.version)}</span>
+        <span>${escapeCatalogText(a.date)}</span>
       </div>
-      <a class="dl-btn" href="${a.download}" target="_blank" rel="noopener">
+      <a class="dl-btn" href="${escapeCatalogText(a.download)}" target="_blank" rel="noopener">
         ${svgIcon('download')}
         Tải xuống
       </a>
@@ -610,6 +600,36 @@ document.getElementById('searchInput').addEventListener('input', (e) => {
 
 renderCatBar();
 renderApps();
+// This block is inserted after the existing renderCatBar(); renderApps(); calls.
+function escapeCatalogText(value) {
+  return String(value ?? '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+}
+
+async function loadAutomaticCatalog() {
+  const status = document.getElementById('catalogStatus');
+  try {
+    const response = await fetch('./catalog.json', { cache: 'no-store' });
+    if (!response.ok) throw new Error('HTTP ' + response.status);
+    const data = await response.json();
+    if (data.schema !== 1 || !Array.isArray(data.apps) || !data.apps.length) throw new Error('Invalid catalog');
+    const ids = new Set();
+    for (const app of data.apps) {
+      if (!app || ['id','name','description','category','platform','format','version','date','download'].some(key => typeof app[key] !== 'string')) throw new Error('Invalid app');
+      if (ids.has(app.id) || !CATEGORIES.some(c => c.key === app.category && c.key !== 'all')) throw new Error('Invalid category or duplicate ID');
+      ids.add(app.id);
+      const url = new URL(app.download);
+      if (url.protocol !== 'https:' || !['github.com','raw.githubusercontent.com'].includes(url.hostname)) throw new Error('Invalid download');
+    }
+    apps = data.apps;
+    renderCatBar();
+    renderApps();
+    if (status) status.textContent = 'Danh sách được cập nhật tự động từ kho tải lên GitHub.';
+  } catch {
+    if (status) status.textContent = 'Đang hiển thị danh sách dự phòng. Hãy tải lại trang để thử cập nhật.';
+  }
+}
+loadAutomaticCatalog();
+
 </script>
 </body>
 </html>
