@@ -90,6 +90,7 @@ async function main() {
   const apps = compileCatalog(seed, releases, process.env.GITHUB_REPOSITORY);
   await fs.mkdir('_site', { recursive: true });
   for (const name of ['index.html', 'upload.html', 'app-ads.txt']) await fs.copyFile(name, `_site/${name}`);
+  await fs.cp('youtube-audio-automation', '_site/youtube-audio-automation', { recursive: true });
   await fs.writeFile('_site/catalog.json', JSON.stringify({ schema: 1, generatedAt: new Date().toISOString(), apps }, null, 2));
   console.log(`Đã cập nhật ${apps.length} mục, đọc ${releases.length} bản phát hành.`);
 }
